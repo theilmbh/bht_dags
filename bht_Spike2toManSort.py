@@ -70,7 +70,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
 
         make_klusta_dir_task = BashOperator(
             task_id='make_klusta_dir',
-            bash_command=as_user(make_klustadir_cmd, USER),
+            bash_command=make_klustadir_cmd,
             params={'block': BLOCK,
             		'birdid': BIRD},
             dag=dag)
@@ -78,7 +78,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
         make_kwd_task = BashOperator(
             task_id='make_kwd',
             pool='make_kwd',
-            bash_command=as_user(make_kwd_command, USER),
+            bash_command=make_kwd_command,
             env={'PATH': ANACONDA_PATH},
             params={'block': BLOCK,
                     'omit': OMIT,
@@ -89,7 +89,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
             task_id='phy_spikesort',
             pool='phy',
             env={'PATH': PHY_PATH},
-            bash_command=as_user(sort_spikes_command, USER),
+            bash_command=sort_spikes_command,
             params={'block': BLOCK,
             		'birdid': BIRD},
             dag=dag)
@@ -103,27 +103,27 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
 
         clear_phy_task = BashOperator(
             task_id='clear_phy',
-            bash_command=as_user(clear_phy_cmd, USER),
+            bash_command=clear_phy_cmd,
             params={'block': BLOCK,
             		'birdid': BIRD},
             dag=dag)
 
         make_kwik_bak_dir_task = BashOperator(
         	task_id='make_kwik_bak_dir',
-        	bash_command=as_user(make_kwik_bak_dir_cmd, USER),
+        	bash_command=make_kwik_bak_dir_cmd,
         	params={'birdid': BIRD},
         	dag=dag)
 
         mv_kwik_bak_task = BashOperator(
             task_id='move_kwik_bak',
-            bash_command=as_user(mv_kwik_bak_cmd, USER),
+            bash_command=mv_kwik_bak_cmd,
             params={'block': BLOCK,
             		'birdid': BIRD},
             dag=dag)
 
         rsync_task = BashOperator(
             task_id='rsync',
-            bash_command=as_user(rsync_command, USER),
+            bash_command=rsync_command,
             params={'block': BLOCK},
             dag=dag)
 

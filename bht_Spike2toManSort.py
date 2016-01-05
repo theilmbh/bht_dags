@@ -49,7 +49,7 @@ make_kwik_bak_dir_cmd = "mkdir -p /mnt/cube/btheilma/kwik_bak/{{ params.birdid }
 mv_kwik_bak_cmd = "mv /mnt/lintu/home/btheilma/experiments/{{ params.birdid }}/klusta/{{ params.block }}/*.kwik.bak /mnt/cube/btheilma/kwik_bak/{{ params.birdid }}"
 
 # rsync
-rsync_command = "nice +5 rsync -azP --relative /mnt/lintu/home/btheilma/experiments/{{ params.bird }}/klusta/{{ params.block }} btheilma@niao.ucsd.edu:/home/btheilma/experiments/"
+rsync_command = "nice +5 rsync -azP --relative /mnt/lintu/home/btheilma/experiments/{{ params.birdid }}/klusta/{{ params.block }} btheilma@niao.ucsd.edu:/home/btheilma/experiments/"
 
 
 with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:

@@ -1,0 +1,118 @@
+"""
+Code that goes along with the Airflow located at:
+http://airflow.readthedocs.org/en/latest/tutorial.html
+"""
+from airflow import DAG
+from airflow.operators import BashOperator, EmailOperator, SlackAPIPostOperator
+from datetime import datetime, timedelta
+
+
+default_args = {
+    'owner': 'btheilma',
+    'start_date': datetime(2015,12,01),
+    'email': ['btheilma@ucsd.edu'],
+    'email_on_failure': True,
+    'email_on_retry': True,
+    'retries': 0,
+    'retry_delay': timedelta(minutes=5),
+}
+
+USER = 'btheilma'
+def as_user(cmd,username):
+    return "sudo -u %s sh -c '%s'" % (username,cmd)
+
+
+
+ANACONDA_PATH = '/usr/local/anaconda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games'
+
+# move man sort to lintu
+rsync_mansort_to_lintu_cmd= "nice +5 rsync -azP --relative btheilma@niao.ucsd.edu:/home/btheilma/experiments/{{ params.birdid }}/klusta/{{ params.block }} /mnt/lintu/home/btheilma/experiments/{{ params.birdid }}/klusta/{{ params.block }}"
+
+# make man sort backup dir
+make_man_sort_bak_dir_cmd = "mkdir -p /mnt/cube/btheilma/kwik_bak/{{ params.birdid }}/man_sort/"
+
+# backup man sort
+man_sort_bak_cmd= "cp /mnt/lintu/home/btheilma/experiments/{{ params.birdid }}/klusta/{{ params.block }}/*.kwik /mnt/cube/btheilma/kwik_bak/{{ params.birdid }}/man_sort/"
+
+# merge events
+merge_events_cmd = "merge_stim_kwik /mnt/lintu/home/btheilma/experiments/{{ params.birdid }}/matfiles/{{ params.block }}/ /mnt/lintu/home/btheilma/experiments/{{ params.birdid }}/klusta/{{ params.block }}"
+
+# prepare topology computation config file
+prep_topo_config_cmd = "python /mnt/lintu/home/btheilma/analysis/prepare_topology_config.py"
+
+# run topology computation
+topology_cmd = "echo"
+
+with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_mansort2topo.tsv','r') as f:
+
+    for line in f:
+        args = line.strip().split()
+        if len(args) < 2:
+            continue
+        BIRD = args[0]
+        BLOCK = args[1]
+        OMIT = ''
+        
+        dag_id = USER + "_" + "mergestim2topology" + "_" + BLOCK
+        dag = DAG(dag_id, 
+                  default_args=default_args,
+                  schedule_interval=None,
+        )
+
+        rsync_mansort_to_lintu_task = BashOperator(
+            task_id='rsync_mansort_to_lintu',
+            bash_command=as_user(rsync_mansort_to_lintu_cmd, USER),
+            params={'block': BLOCK,
+            		'birdid': BIRD},
+            dag=dag)
+
+        make_man_sort_bak_dir_task = BashOperator(
+            task_id='make_man_sort_bak_dir',
+            bash_command=as_user(make_man_sort_bak_dir_cmd, USER),
+            params={'block': BLOCK,
+                    'birdid': BIRD},
+            dag=dag)
+
+        man_sort_bak_task = BashOperator(
+            task_id='man_sort_bak',
+            bash_command=as_user(man_sort_bak_cmd, USER),
+            params={'block': BLOCK,
+            		'birdid': BIRD},
+            dag=dag)
+
+        merge_events_task = BashOperator(
+            task_id='merge_events',
+            bash_command=as_user(merge_events_cmd, USER),
+            env={'PATH': ANACONDA_PATH},
+            params={'block': BLOCK,
+                    'birdid': BIRD},
+            dag=dag)
+
+        prep_topo_config_task = BashOperator(
+            task_id='prep_topo_config',
+            bash_command=as_user(prep_topo_config_cmd, USER),
+            params={'block': BLOCK,
+            		'birdid': BIRD},
+            dag=dag)
+
+        topology_task = BashOperator(
+        	task_id='topology',
+        	bash_command=as_user(topology_cmd, USER),
+        	params={'birdid': BIRD},
+        	dag=dag)
+
+        email_me = EmailOperator(
+            task_id='email_me',
+            to=default_args['email'],
+            subject='Topology Computation Completed',
+            html_content='%s is complete' % dag_id,
+            dag=dag)
+
+        make_man_sort_bak_dir_task.set_upstream(rsync_mansort_to_lintu_task)
+        man_sort_bak_task.set_upstream(make_man_sort_bak_dir_task)
+        merge_events_task.set_upstream(man_sort_bak_task)
+        prep_topo_config_task.set_upstream(merge_events_task)
+        topology_task.set_upstream(prep_topo_config_task)
+        email_me.set_upstream(topology_task)
+     
+        globals()[dag_id] = dag

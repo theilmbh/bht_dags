@@ -19,7 +19,7 @@ default_args = {
 
 USER = 'btheilma'
 def as_user(cmd,username):
-    return "sudo -u %s sh -c '%s'" % (username,cmd)
+    return "runuser -l %s -m -c '%s'" % (username,cmd)
 
 SLACK_TOKEN = 'xoxp-8710210593-8710210785-17586684384-e5abadd63e'
 
@@ -49,7 +49,7 @@ make_kwik_bak_dir_cmd = "mkdir -p /mnt/cube/btheilma/kwik_bak/{{ params.birdid }
 mv_kwik_bak_cmd = "mv /mnt/lintu/home/btheilma/experiments/{{ params.birdid }}/klusta/{{ params.block }}/*.kwik.bak /mnt/cube/btheilma/kwik_bak/{{ params.birdid }}"
 
 # rsync
-rsync_command = "nice +5 rsync -azP --relative {{ params.klustadir }} {{ params.mansortdir }}"
+rsync_command = "nice +5 rsync -azP --relative /mnt/lintu/home/btheilma/experiments/{{ params.bird }}/klusta/{{ params.block }} btheilma@niao.ucsd.edu:/home/btheilma/experiments/"
 
 
 with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
@@ -62,11 +62,6 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
         BLOCK = args[1]
         OMIT = ''
         
-        KLUSTA_DIR = '/mnt/lintu/home/btheilma/experiments/%s/klusta/%s/' % (BIRD, BLOCK)
-        MATFILE_DIR = '/mnt/lintu/home/btheilma/experiments/%s/matfiles/%s' % (BIRD, BLOCK)
-        KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/' % BIRD
-        MANSORT_DIR = 'btheilma@niao.ucsd.edu:/home/btheilma/experiments/'
-
         dag_id = USER + BLOCK
         dag = DAG(dag_id, 
                   default_args=default_args,
@@ -75,7 +70,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
 
         make_klusta_dir_task = BashOperator(
             task_id='make_klusta_dir',
-            bash_command=make_klustadir_cmd,
+            bash_command=as_user(make_klustadir_cmd, USER),
             params={'block': BLOCK,
             		'birdid': BIRD},
             dag=dag)
@@ -83,7 +78,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
         make_kwd_task = BashOperator(
             task_id='make_kwd',
             pool='make_kwd',
-            bash_command=make_kwd_command,
+            bash_command=as_user(make_kwd_command, USER),
             env={'PATH': ANACONDA_PATH},
             params={'block': BLOCK,
                     'omit': OMIT,
@@ -94,7 +89,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
             task_id='phy_spikesort',
             pool='phy',
             env={'PATH': PHY_PATH},
-            bash_command=sort_spikes_command,
+            bash_command=as_user(sort_spikes_command, USER),
             params={'block': BLOCK,
             		'birdid': BIRD},
             dag=dag)
@@ -108,27 +103,27 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
 
         clear_phy_task = BashOperator(
             task_id='clear_phy',
-            bash_command=clear_phy_cmd,
+            bash_command=as_user(clear_phy_cmd, USER),
             params={'block': BLOCK,
             		'birdid': BIRD},
             dag=dag)
 
         make_kwik_bak_dir_task = BashOperator(
         	task_id='make_kwik_bak_dir',
-        	bash_command=make_kwik_bak_dir_cmd,
+        	bash_command=as_user(make_kwik_bak_dir_cmd, USER),
         	params={'birdid': BIRD},
         	dag=dag)
 
         mv_kwik_bak_task = BashOperator(
             task_id='move_kwik_bak',
-            bash_command=mv_kwik_bak_cmd,
+            bash_command=as_user(mv_kwik_bak_cmd, USER),
             params={'block': BLOCK,
             		'birdid': BIRD},
             dag=dag)
 
         rsync_task = BashOperator(
             task_id='rsync',
-            bash_command=rsync_command,
+            bash_command=as_user(rsync_command, USER),
             params={'block': BLOCK},
             dag=dag)
 
@@ -136,7 +131,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
             task_id='email_me',
             to=default_args['email'],
             subject='%s is complete' % dag_id,
-            html_content='you can now manually sort on niao',
+            html_content='You may now manually sort on NIAO',
             dag=dag)
 
         slack_it = SlackAPIPostOperator(

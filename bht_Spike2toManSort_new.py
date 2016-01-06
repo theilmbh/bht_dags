@@ -117,7 +117,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
             bash_command=make_kwd_command,
             env={'PATH': ANACONDA_PATH},
             params={'klustadir': KLUSTA_DIR,
-                    'matfiledir': MATFILE_DIR
+                    'matfiledir': MATFILE_DIR,
                     'probe': PROBE,
                     'rig': RIG},
             on_failure_callback = lambda c: clean_dir(c['params']['klustadir']),

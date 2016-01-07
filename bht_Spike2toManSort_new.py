@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 default_args = {
     'owner': 'btheilma',
     'start_date': datetime(2015,12,01),
-    'email': ['btheilma@ucsd.edu'],
+    'email': ['btheilma@ucsd.edu;kperks@ucsd.edu'],
     'email_on_failure': True,
     'email_on_retry': True,
     'retries': 0,
@@ -77,7 +77,7 @@ make_kwik_bak_dir_cmd = "mkdir -p {{ params.kwikbakdir }}"
 mv_kwik_bak_cmd = "mv {{ params.klustadir }}*.kwik.bak {{ params.kwikbakdir }}"
 
 # rsync
-rsync_command = "nice +5 rsync -azP --relative {{ params.klustadir }} {{ params.mansortdir }}"
+rsync_command = "rsync -azP -r {{ params.klustadir }} {{ params.mansortdir }}"
 
 
 with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
@@ -93,7 +93,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
         KLUSTA_DIR = '/mnt/lintu/home/btheilma/experiments/%s/klusta/%s/' % (BIRD, BLOCK)
         MATFILE_DIR = '/mnt/lintu/home/btheilma/experiments/%s/matfiles/%s/' % (BIRD, BLOCK)
         KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/' % BIRD
-        MANSORT_DIR = 'btheilma@niao.ucsd.edu:/home/btheilma/experiments/'
+        MANSORT_DIR = 'brad@niao.ucsd.edu:/home/brad/experiments/'
 
         PROBE = "A1x16-5mm-50"
         RIG = "burung16"
@@ -173,7 +173,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
             task_id='email_me',
             to=default_args['email'],
             subject='%s is complete' % dag_id,
-            html_content='you can now manually sort on niao',
+            html_content='You may now manually sort on NIAO',
             dag=dag)
 
         slack_it = SlackAPIPostOperator(

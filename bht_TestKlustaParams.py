@@ -144,7 +144,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_TestKlustaParams.ts
 
         make_mansort_dir_task = BashOperator(
         	task_id='make_mansort_dir',
-        	bash_command=make_mansort_dir_cmd,
+        	bash_command=as_user(make_mansort_dir_cmd, USER),
         	params={'mansortdir': MANSORT_DIR},
         	dag=dag)
 

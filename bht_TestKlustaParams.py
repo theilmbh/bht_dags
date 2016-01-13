@@ -89,10 +89,12 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_TestKlustaParams.ts
         BIRD = args[0]
         BLOCK = args[1]
         OMIT = ''
+        # Get Just the Bird ID
+        BIRDID = BIRD[:-2]
         
-        KLUSTA_DIR = '/mnt/lintu/home/btheilma/experiments/%s/klusta/%s/' % (BIRD, BLOCK)
-        MATFILE_DIR = '/mnt/lintu/home/btheilma/experiments/%s/matfiles/%s/' % (BIRD, BLOCK)
-        KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/' % BIRD
+        KLUSTA_DIR = '/mnt/lintu/home/btheilma/experiments/%s/klusta/%s/' % (BIRDID, BLOCK)
+        MATFILE_DIR = '/mnt/lintu/home/btheilma/experiments/%s/matfiles/%s/' % (BIRDID, BLOCK)
+        KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/' % BIRDID
         MANSORT_DIR = 'brad@niao.ucsd.edu:/home/brad/experiments/'
 
         PROBE = "A1x16-5mm-50"

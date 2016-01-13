@@ -98,7 +98,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_TestKlustaParams.ts
         PROBE = "A1x16-5mm-50"
         RIG = "burung16"
 
-        dag_id = USER + BLOCK
+        dag_id = USER +"_" + BIRD + "_" + BLOCK
         dag = DAG(dag_id, 
                   default_args=default_args,
                   schedule_interval='@once',

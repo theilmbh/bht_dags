@@ -73,11 +73,14 @@ merge_events_cmd = "merge_stim_kwik {{ params.matfiledir }}/ {{ params.klustadir
 # make kwik bakup dir
 make_kwik_bak_dir_cmd = "mkdir -p {{ params.kwikbakdir }}"
 
+# make mansort dir
+make_mansort_dir_cmd = "ssh brad@niao.ucsd.edu mkdir -p {{ params.mansortdir }}"
+
 # 
 mv_kwik_bak_cmd = "mv {{ params.klustadir }}*.kwik.bak {{ params.kwikbakdir }}"
 
 # rsync
-rsync_command = "rsync -azP -r {{ params.klustadir }} {{ params.mansortdir }}"
+rsync_command = "rsync -azP -r {{ params.klustadir }} {{ params.mansorthost }}:{{ params.mansortdir }}"
 
 
 with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
@@ -90,10 +93,11 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
         BLOCK = args[1]
         OMIT = ''
         
-        KLUSTA_DIR = '/mnt/lintu/home/btheilma/experiments/%s/klusta/%s/' % (BIRD, BLOCK)
+        KLUSTA_DIR = '/mnt/lintu/home/Gentnerlab/sharedata/Ice/%s/klusta/%s/' % (BIRD, BLOCK)
         MATFILE_DIR = '/mnt/lintu/home/btheilma/experiments/%s/matfiles/%s/' % (BIRD, BLOCK)
         KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/' % BIRD
-        MANSORT_DIR = 'brad@niao.ucsd.edu:/home/brad/experiments/'
+        MANSORT_HOST = 'brad@niao.ucsd.edu'
+        MANSORT_DIR = '/home/brad/experiments/%s/klust/%s' % (BIRD, BLOCK)
 
         PROBE = "A1x16-5mm-50"
         RIG = "burung16"
@@ -162,11 +166,18 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
             		'kwikbakdir': KWIKBAK_DIR},
             dag=dag)
 
+        make_mansort_dir_task = BashOperator(
+            task_id='make_mansort_dir',
+            bash_command=as_user(make_mansort_dir_cmd, USER),
+            params={'mansortdir': MANSORT_DIR},
+            dag=dag)
+
         rsync_task = BashOperator(
             task_id='rsync',
             bash_command=as_user(rsync_command, USER),
             params={'klustadir': KLUSTA_DIR,
-                    'mansortdir': MANSORT_DIR},
+                    'mansortdir': MANSORT_DIR,
+                    'mansorthost': MANSORT_HOST},
             dag=dag)
 
         email_me = EmailOperator(
@@ -189,9 +200,10 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
         clear_phy_task.set_upstream(phy_task)
         make_kwik_bak_dir_task.set_upstream(phy_task)
         mv_kwik_bak_task.set_upstream(make_kwik_bak_dir_task)
-        #rsync_task.set_upstream(merge_events_task)
+        make_mansort_dir_task.set_upstream(phy_task)
         rsync_task.set_upstream(clear_phy_task)
         rsync_task.set_upstream(mv_kwik_bak_task)
+        rsync_task.set_upstream(make_mansort_dir_task)
         email_me.set_upstream(rsync_task)
         slack_it.set_upstream(rsync_task)
      

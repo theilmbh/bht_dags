@@ -66,11 +66,17 @@ rsync_command = "rsync -azP -r {{ params.mansorthost }}:{{ params.mansortdir }} 
 # kwik2pandas
 kwik2pandas_cmd = "{{ params.ecanalysispath }}/kwik2pandasBT.py {{ params.postphydir }} {{ params.postphydir }}"
 
+# make_raster_dir
+make_raster_dir_cmd = "mkdir -p {{ params.rasterdir }}"
+
+# make_raster_cmd
+make_raster_cmd = "{{ params.ecanalysispath }}/make_raster_py.py {{ params.postphydir }} {{ params.rasterdir }}"
+
 with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_postphy.tsv','r') as f:
 
     for line in f:
         args = line.strip().split()
-        if len(args) < 2:
+        if len(args) < 3:
             continue
         BIRD = args[0]
         BLOCK = args[1]
@@ -82,6 +88,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_postphy.tsv','r') a
         MANSORT_HOST = 'brad@niao.ucsd.edu'
         MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s' % (BIRD, BLOCK)
         POSTPHY_DIR = '/mnt/lintu/home/btheilma/experiments/%s/postphy_%s/%s/' % (BIRD, SORT_ID, BLOCK)
+        RASTER_DIR = '/mnt/linut/home/btheilma/experiments/%s/postphy_%s/%s/rasters/' % (BIRD, SORT_ID, BLOCK)
 
         PROBE = "A1x16-5mm-50"
         RIG = "burung16"
@@ -91,7 +98,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_postphy.tsv','r') a
                   default_args=default_args,
                   schedule_interval='@once',
         )
-
+    ############ Post-phy cleanup and merging
         make_postphy_dir_task = BashOperator(
             task_id='make_postphy_dir',
             bash_command=make_postphy_dir_cmd,
@@ -123,6 +130,24 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_postphy.tsv','r') a
                     'ecanalysispath': ECANALYSIS_PATH},
             dag=dag)
 
+    ############ Rasters
+        make_raster_dir_task = BashOperator(
+            task_id='make_raster_dir',
+            bash_command=make_raster_dir_cmd,
+            params={'rasterdir': RASTER_DIR},
+            on_success_callback = lambda c: set_perms(c['params']['rasterdir'],default_args['owner']), 
+            dag=dag)
+
+        make_raster_task = BashOperator(
+            task_id='make_rasters',
+            bash_command=make_raster_cmd,
+            env={'PATH': ANACONDA_PATH},
+            params={'postphydir': POSTPHY_DIR,
+                    'ecanalysispath': ECANALYSIS_PATH,
+                    'rasterdir': RASTER_DIR},
+            dag=dag)
+
+    ############ Report Completion
         email_me = EmailOperator(
             task_id='email_me',
             to=default_args['email'],
@@ -142,5 +167,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_postphy.tsv','r') a
         kwik2pandas_task.set_upstream(merge_events_task)
         email_me.set_upstream(kwik2pandas_task)
         slack_it.set_upstream(kwik2pandas_task)
+        make_raster_dir_task.set_upstream(kwik2pandas_task)
+        make_raster_task.set_upstream(make_raster_dir_task)
      
         globals()[dag_id] = dag

@@ -97,7 +97,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
         MATFILE_DIR = '/mnt/lintu/home/btheilma/experiments/%s/matfiles/%s/' % (BIRD, BLOCK)
         KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/' % BIRD
         MANSORT_HOST = 'brad@niao.ucsd.edu'
-        MANSORT_DIR = '/home/brad/experiments/%s/klust/%s' % (BIRD, BLOCK)
+        MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s' % (BIRD, BLOCK)
 
         PROBE = "A1x16-5mm-50"
         RIG = "burung16"
@@ -112,7 +112,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
             task_id='make_klusta_dir',
             bash_command=make_klustadir_cmd,
             params={'klustadir': KLUSTA_DIR},
-            on_success_callback = lambda c: set_perms(c['params']['target_dir'],default_args['owner']), 
+            on_success_callback = lambda c: set_perms(c['params']['klustadir'],default_args['owner']), 
             dag=dag)
 
         make_kwd_task = BashOperator(

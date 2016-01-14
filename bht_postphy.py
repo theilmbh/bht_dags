@@ -2,7 +2,7 @@
 Code that goes along with the Airflow located at:
 http://airflow.readthedocs.org/en/latest/tutorial.html
 """
-import os, shutil, glob, logging
+import os, shutil, glob, logging, pwd
 from airflow import DAG
 from airflow.operators import BashOperator, EmailOperator, SlackAPIPostOperator
 from datetime import datetime, timedelta
@@ -86,14 +86,14 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_postphy.tsv','r') a
         MATFILE_DIR = '/mnt/lintu/home/btheilma/experiments/%s/matfiles/%s/' % (BIRD, BLOCK)
         KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/klusta/%s' % (BIRD, BLOCK)
         MANSORT_HOST = 'brad@niao.ucsd.edu'
-        MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s' % (BIRD, BLOCK)
+        MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s/' % (BIRD, BLOCK)
         POSTPHY_DIR = '/mnt/lintu/home/btheilma/experiments/%s/postphy_%s/%s/' % (BIRD, SORT_ID, BLOCK)
-        RASTER_DIR = '/mnt/linut/home/btheilma/experiments/%s/postphy_%s/%s/rasters/' % (BIRD, SORT_ID, BLOCK)
+        RASTER_DIR = '/mnt/lintu/home/btheilma/experiments/%s/postphy_%s/%s/rasters/' % (BIRD, SORT_ID, BLOCK)
 
         PROBE = "A1x16-5mm-50"
         RIG = "burung16"
 
-        dag_id = USER + BLOCK
+        dag_id = "postphy_" + USER + "_" + BLOCK
         dag = DAG(dag_id, 
                   default_args=default_args,
                   schedule_interval='@once',

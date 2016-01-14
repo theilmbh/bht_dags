@@ -2,7 +2,7 @@
 Code that goes along with the Airflow located at:
 http://airflow.readthedocs.org/en/latest/tutorial.html
 """
-import os, shutil, glob, logging
+import os, shutil, glob, logging, pwd
 from airflow import DAG
 from airflow.operators import BashOperator, EmailOperator, SlackAPIPostOperator
 from datetime import datetime, timedelta

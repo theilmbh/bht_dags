@@ -101,7 +101,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_postphy.tsv','r') a
     ############ Post-phy cleanup and merging
         make_postphy_dir_task = BashOperator(
             task_id='make_postphy_dir',
-            bash_command=make_postphy_dir_cmd,
+            bash_command=as_user(make_postphy_dir_cmd, USER),
             params={'postphydir': POSTPHY_DIR},
             on_success_callback = lambda c: set_perms(c['params']['postphydir'],default_args['owner']), 
             dag=dag)

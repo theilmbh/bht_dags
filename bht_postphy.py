@@ -66,7 +66,7 @@ rsync_command = "rsync -azP -r {{ params.mansorthost }}:{{ params.mansortdir }} 
 # kwik2pandas
 kwik2pandas_cmd = "{{ params.ecanalysispath }}/kwik2pandasBT.py {{ params.postphydir }} {{ params.postphydir }}"
 
-with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
+with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_postphy.tsv','r') as f:
 
     for line in f:
         args = line.strip().split()

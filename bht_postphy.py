@@ -78,7 +78,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_postphy.tsv','r') a
         
         
         MATFILE_DIR = '/mnt/lintu/home/btheilma/experiments/%s/matfiles/%s/' % (BIRD, BLOCK)
-        KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/' % BIRD
+        KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/klusta/%s' % (BIRD, BLOCK)
         MANSORT_HOST = 'brad@niao.ucsd.edu'
         MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s' % (BIRD, BLOCK)
         POSTPHY_DIR = '/mnt/lintu/home/btheilma/experiments/%s/postphy_%s/%s/' % (BIRD, SORT_ID, BLOCK)

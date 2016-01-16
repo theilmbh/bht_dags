@@ -93,7 +93,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds_postphy.tsv','r') a
         PROBE = "A1x16-5mm-50"
         RIG = "burung16"
 
-        dag_id = "postphy_" + USER + "_" + BLOCK
+        dag_id = "postphy_" + BIRD + "_" + USER + "_" + BLOCK
         dag = DAG(dag_id, 
                   default_args=default_args,
                   schedule_interval='@once',

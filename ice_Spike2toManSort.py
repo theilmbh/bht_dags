@@ -83,7 +83,7 @@ mv_kwik_bak_cmd = "mv {{ params.klustadir }}*.kwik.bak {{ params.kwikbakdir }}"
 rsync_command = "rsync -azP -r {{ params.klustadir }} {{ params.mansorthost }}:{{ params.mansortdir }}"
 
 
-with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
+with open('/mnt/lintu/home/Gentnerlab/airflow/dags/ice_birds.tsv','r') as f:
 
     for line in f:
         args = line.strip().split()
@@ -93,8 +93,8 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/bht_birds.tsv','r') as f:
         BLOCK = args[1]
         OMIT = ''
         
-        KLUSTA_DIR = '/mnt/lintu/home/btheilma/experiments/%s/klusta/%s/' % (BIRD, BLOCK)
-        MATFILE_DIR = '/mnt/lintu/home/btheilma/experiments/%s/matfiles/%s/' % (BIRD, BLOCK)
+        KLUSTA_DIR = '/mnt/lintu/home/Gentnerlab/sharedata/Ice/%s/klusta/%s/' % (BIRD, BLOCK)
+        MATFILE_DIR = '/mnt/lintu/home/Gentnerlab/sharedata/Ice/%s/matfiles/%s/' % (BIRD, BLOCK)
         KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/klusta/%s' % (BIRD, BLOCK)
         MANSORT_HOST = 'brad@niao.ucsd.edu'
         MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s' % (BIRD, BLOCK)

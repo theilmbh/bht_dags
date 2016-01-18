@@ -49,14 +49,12 @@ def set_perms(path,username):
     return True
 
 
-SLACK_TOKEN = 'xoxp-8710210593-8710210785-17586684384-e5abadd63e'
-
 ANACONDA_PATH = '/usr/local/anaconda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games'
 PHY_PATH = "/usr/local/anaconda/envs/phy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 
 make_klustadir_cmd = "mkdir -p {{ params.klustadir }}"
 
-make_kwd_command = "make_kwd {{ params.rig }} {{ params.probe }} {{ params.matfiledir }} {{ params.klustadir }} -s 31250 -a none"
+make_kwd_command = "make_kwd {{ params.rig }} {{ params.probe }} {{ params.matfiledir }} {{ params.klustadir }} -s 31250 -a none --lower 3.0"
 
 def on_kwd_failure(context):
     # clear out the klusta dir
@@ -95,9 +93,9 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/ice_birds.tsv','r') as f:
         
         KLUSTA_DIR = '/mnt/lintu/home/Gentnerlab/sharedata/Ice/%s/klusta/%s/' % (BIRD, BLOCK)
         MATFILE_DIR = '/mnt/lintu/home/Gentnerlab/sharedata/Ice/%s/matfiles/%s/' % (BIRD, BLOCK)
-        KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/klusta/%s' % (BIRD, BLOCK)
+        KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/klusta/%s/' % (BIRD, BLOCK)
         MANSORT_HOST = 'brad@niao.ucsd.edu'
-        MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s' % (BIRD, BLOCK)
+        MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s/' % (BIRD, BLOCK)
 
         PROBE = "A1x16-5mm-50"
         RIG = "burung16"
@@ -187,12 +185,6 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/ice_birds.tsv','r') as f:
             html_content='You may now manually sort on NIAO',
             dag=dag)
 
-        slack_it = SlackAPIPostOperator(
-            task_id='slack_it',
-            token=SLACK_TOKEN,
-            text='%s is complete' % dag_id,
-            channel='#ephys',
-            dag=dag)
 
         make_kwd_task.set_upstream(make_klusta_dir_task)
         phy_task.set_upstream(make_kwd_task)
@@ -205,6 +197,5 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/ice_birds.tsv','r') as f:
         rsync_task.set_upstream(mv_kwik_bak_task)
         rsync_task.set_upstream(make_mansort_dir_task)
         email_me.set_upstream(rsync_task)
-        slack_it.set_upstream(rsync_task)
      
         globals()[dag_id] = dag

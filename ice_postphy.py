@@ -49,8 +49,6 @@ def set_perms(path,username):
     return True
 
 
-SLACK_TOKEN = 'xoxp-8710210593-8710210785-17586684384-e5abadd63e'
-
 ANACONDA_PATH = '/usr/local/anaconda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games'
 PHY_PATH = "/usr/local/anaconda/envs/phy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 ECANALYSIS_PATH = "/mnt/lintu/home/btheilma/code/ECAnalysis"
@@ -155,18 +153,11 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/ice_birds_postphy.tsv','r') a
             html_content='You may commence analysis.',
             dag=dag)
 
-        slack_it = SlackAPIPostOperator(
-            task_id='slack_it',
-            token=SLACK_TOKEN,
-            text='%s is merged' % dag_id,
-            channel='#ephys',
-            dag=dag)
 
         rsync_task.set_upstream(make_postphy_dir_task)
         merge_events_task.set_upstream(rsync_task)
         kwik2pandas_task.set_upstream(merge_events_task)
         email_me.set_upstream(kwik2pandas_task)
-        slack_it.set_upstream(kwik2pandas_task)
         make_raster_dir_task.set_upstream(kwik2pandas_task)
         make_raster_task.set_upstream(make_raster_dir_task)
      

@@ -89,9 +89,9 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/ice_birds.tsv','r') as f:
             continue
         BIRD = args[0]
         BLOCK = args[1]
-        OMIT = ''
+        SORTID = args[2]
         
-        KLUSTA_DIR = '/mnt/cube/Ice/%s/klusta/%s/' % (BIRD, BLOCK)
+        KLUSTA_DIR = '/mnt/cube/Ice/%s/klusta/%s/%s/' % (BIRD, SORTID, BLOCK)
         MATFILE_DIR = '/mnt/cube/Ice/%s/matfiles/%s/' % (BIRD, BLOCK)
         KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/klusta/%s/' % (BIRD, BLOCK)
         MANSORT_HOST = 'brad@niao.ucsd.edu'

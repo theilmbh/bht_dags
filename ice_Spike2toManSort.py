@@ -81,7 +81,7 @@ mv_kwik_bak_cmd = "mv {{ params.klustadir }}*.kwik.bak {{ params.kwikbakdir }}"
 rsync_command = "rsync -azP -r {{ params.klustadir }} {{ params.mansorthost }}:{{ params.mansortdir }}"
 
 
-with open('/mnt/lintu/home/Gentnerlab/airflow/dags/ice_birds.tsv','r') as f:
+with open('/mnt/cube/dags/ice_birds.tsv','r') as f:
 
     for line in f:
         args = line.strip().split()

@@ -70,7 +70,7 @@ make_raster_dir_cmd = "mkdir -p {{ params.rasterdir }}"
 # make_raster_cmd
 make_raster_cmd = "{{ params.ecanalysispath }}/make_raster_py.py {{ params.postphydir }} {{ params.rasterdir }}"
 
-with open('/mnt/lintu/home/Gentnerlab/airflow/dags/ice_birds_postphy.tsv','r') as f:
+with open('/mnt/cube/dags/ice_birds_postphy.tsv','r') as f:
 
     for line in f:
         args = line.strip().split()

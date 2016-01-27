@@ -81,7 +81,7 @@ with open('/mnt/lintu/home/Gentnerlab/airflow/dags/ice_birds_postphy.tsv','r') a
         SORT_ID = args[2]
         
         
-        MATFILE_DIR = '/mnt/lintu/home/Gentnerlab/sharedata/Ice/%s/matfiles/%s/' % (BIRD, BLOCK)
+        MATFILE_DIR = '/mnt/cube/Ice/%s/matfiles/%s/' % (BIRD, BLOCK)
         KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/klusta/%s' % (BIRD, BLOCK)
         MANSORT_HOST = 'brad@niao.ucsd.edu'
         MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s/' % (BIRD, BLOCK)

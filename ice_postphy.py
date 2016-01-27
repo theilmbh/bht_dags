@@ -78,7 +78,7 @@ with open('/mnt/cube/dags/ice_birds_postphy.tsv','r') as f:
             continue
         BIRD = args[0]
         BLOCK = args[1]
-        SORT_ID = 'postphy_'+ datetime.today.strftime('%m%d%y_%H%M')
+        SORT_ID = 'postphy_'+ datetime.datetime.today().strftime('%m%d%y_%H%M')
         
         
         MATFILE_DIR = '/mnt/cube/Ice/%s/matfiles/%s/' % (BIRD, BLOCK)

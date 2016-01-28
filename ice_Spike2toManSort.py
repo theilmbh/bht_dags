@@ -95,7 +95,7 @@ with open('/mnt/cube/dags/ice_birds.tsv','r') as f:
         MATFILE_DIR = '/mnt/cube/Ice/%s/matfiles/%s/' % (BIRD, BLOCK)
         KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/klusta/%s/' % (BIRD, BLOCK)
         MANSORT_HOST = 'brad@niao.ucsd.edu'
-        MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s/' % (BIRD, BLOCK)
+        MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s/%s/' % (BIRD, SORTID, BLOCK)
 
         PROBE = "A1x16-5mm-50"
         RIG = "burung16"

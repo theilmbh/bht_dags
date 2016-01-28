@@ -84,7 +84,7 @@ with open('/mnt/cube/dags/ice_birds_postphy.tsv','r') as f:
         MATFILE_DIR = '/mnt/cube/Ice/%s/matfiles/%s/' % (BIRD, BLOCK)
         KWIKBAK_DIR = '/mnt/cube/btheilma/kwik_bak/%s/klusta/%s' % (BIRD, BLOCK)
         MANSORT_HOST = 'brad@niao.ucsd.edu'
-        MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s/' % (BIRD, BLOCK)
+        MANSORT_DIR = '/home/brad/experiments/%s/klusta/%s/%s/' % (BIRD, SORT_ID, BLOCK)
         POSTPHY_DIR = '/mnt/lintu/home/Gentnerlab/Ice/%s/postphy_%s/%s/' % (BIRD, SORT_ID, BLOCK)
         RASTER_DIR = '/mnt/lintu/home/Gentnerlab/Ice/%s/postphy_%s/%s/rasters/' % (BIRD, SORT_ID, BLOCK)
 

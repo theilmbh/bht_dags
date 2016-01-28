@@ -89,7 +89,7 @@ with open('/mnt/cube/dags/ice_birds.tsv','r') as f:
             continue
         BIRD = args[0]
         BLOCK = args[1]
-        SORTID = 'phy_' + datetime.datetime.today().strftime('%m%d%y_%H%M')
+        SORTID = args[2]
         
         KLUSTA_DIR = '/mnt/cube/Ice/%s/klusta/%s/%s/' % (BIRD, SORTID, BLOCK)
         MATFILE_DIR = '/mnt/cube/Ice/%s/matfiles/%s/' % (BIRD, BLOCK)

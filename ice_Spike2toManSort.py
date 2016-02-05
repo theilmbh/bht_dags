@@ -125,7 +125,7 @@ with open('/mnt/cube/dags/ice_birds.tsv','r') as f:
             params={'klustadir': KLUSTA_DIR,
                     'matfiledir': MATFILE_DIR,
                     'probe': PROBE,
-                    'rig': RIG
+                    'rig': RIG,
                     'omit': OMIT},
             on_failure_callback = lambda c: clean_dir(c['params']['klustadir']),
             on_success_callback = lambda c: set_perms(c['params']['klustadir'],default_args['owner']),

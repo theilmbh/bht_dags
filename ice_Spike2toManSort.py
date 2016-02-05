@@ -54,7 +54,7 @@ PHY_PATH = "/usr/local/anaconda/envs/phy/bin:/usr/local/sbin:/usr/local/bin:/usr
 
 make_klustadir_cmd = "mkdir -p {{ params.klustadir }}"
 
-make_kwd_command = "make_kwd {{ params.rig }} {{ params.probe }} {{ params.matfiledir }} {{ params.klustadir }} -s 31250 -a none --lower 3.0 --prespike 0.5 --postspike 1.0"
+make_kwd_command = "make_kwd {{ params.rig }} {{ params.probe }} {{ params.matfiledir }} {{ params.klustadir }} -s 31250 -a none --lower 3.0 --prespike 0.5 --postspike 1.0 -x {{ params.omit }}"
 
 def on_kwd_failure(context):
     # clear out the klusta dir
@@ -90,6 +90,10 @@ with open('/mnt/cube/dags/ice_birds.tsv','r') as f:
         BIRD = args[0]
         BLOCK = args[1]
         SORTID = args[2]
+        if len(args) > 3:
+            OMIT = args[3]
+        else:
+            OMIT = ''
         
         KLUSTA_DIR = '/mnt/cube/Ice/%s/klusta/%s/%s/' % (BIRD, SORTID, BLOCK)
         MATFILE_DIR = '/mnt/cube/Ice/%s/matfiles/%s/' % (BIRD, BLOCK)
@@ -121,7 +125,8 @@ with open('/mnt/cube/dags/ice_birds.tsv','r') as f:
             params={'klustadir': KLUSTA_DIR,
                     'matfiledir': MATFILE_DIR,
                     'probe': PROBE,
-                    'rig': RIG},
+                    'rig': RIG
+                    'omit': OMIT},
             on_failure_callback = lambda c: clean_dir(c['params']['klustadir']),
             on_success_callback = lambda c: set_perms(c['params']['klustadir'],default_args['owner']),
             dag=dag)
